@@ -1,3 +1,8 @@
+import 'package:chat_app_messenger/bloc/dark_mode_bloc.dart';
+import 'package:chat_app_messenger/bloc/login_bloc.dart';
+import 'package:chat_app_messenger/event/dark_mode_event.dart';
+import 'package:chat_app_messenger/event/login_event.dart';
+import 'package:chat_app_messenger/state/dark_mode_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:chat_app_messenger/firebase/firebase_service.dart';
 import 'package:chat_app_messenger/provider/google_sign_in.dart';
@@ -5,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
@@ -125,7 +131,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final thmode = Provider.of<DarkMode>(context);
+    final darkModeBloc = BlocProvider.of<DarkModeBloc>(context);
+    final loginLogoutBloc = BlocProvider.of<LogInLogOutBloc>(context, listen: false);
     return Scaffold(
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
@@ -148,29 +155,27 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     Spacer(),
                     SizedBox(width: 20),
-                    // CupertinoSwitch(
-                    //   value: thmode.darkMode,
-                    //   onChanged: (bool val) {
-                    //     thmode.changemode();
-                    //   },
-                    // ),
-                    Switch(
-                      value: thmode.darkMode,
-                      onChanged: (bool val) {
-                        thmode.changemode();
-                      },
-                      activeTrackColor: Colors.lightGreenAccent,
-                      activeColor: Colors.green,
+                    BlocBuilder<DarkModeBloc, DarkModeState>(
+                        builder: (context, state){
+                          return Switch(
+                            value: state.darkMode,
+                            onChanged: (bool val) {
+                              darkModeBloc.add(ChangeMode());
+                            },
+                            activeTrackColor: Colors.lightGreenAccent,
+                            activeColor: Colors.green,
+                          );
+                        }
                     ),
                     ElevatedButton(
                       style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+                        foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.black),
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.grey),
                       ),
                       onPressed: () {
-                        final provider =
-                        Provider.of<GoogleSignInProvider>(context, listen: false);
-                        provider.logout();
+                        loginLogoutBloc.add(Logout());
                       },
                       child: Text('Logout'),
                     )

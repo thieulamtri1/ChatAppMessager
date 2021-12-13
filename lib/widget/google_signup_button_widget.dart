@@ -1,5 +1,8 @@
+import 'package:chat_app_messenger/bloc/login_bloc.dart';
+import 'package:chat_app_messenger/event/login_event.dart';
 import 'package:chat_app_messenger/provider/google_sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -19,9 +22,9 @@ class GoogleSignupButtonWidget extends StatelessWidget {
           textColor: Colors.black,
           icon: FaIcon(FontAwesomeIcons.google, color: Colors.red),
           onPressed: () {
-            final provider =
-                Provider.of<GoogleSignInProvider>(context, listen: false);
-            provider.login();
+            final loginLogoutBloc =
+            BlocProvider.of<LogInLogOutBloc>(context, listen: false);
+            loginLogoutBloc.add(Login());
           },
         ),
       );
